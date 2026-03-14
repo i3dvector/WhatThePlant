@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "WhatThePlant",
+    "slug": "whattheplant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "whattheplant",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2D6A4F"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.whattheplant.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#2D6A4F",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "com.whattheplant.app",
+      "permissions": [
+        "CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-dev-client",
+      "expo-router",
+      "expo-sqlite",
+      "expo-sharing",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "WhatThePlant needs camera access to identify plants."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "WhatThePlant needs access to your photos to identify plants from your gallery."
+        }
+      ]
+    ],
+    "extra": {
+      "plantNetApiKey": "YOUR_API_KEY",
+      "router": {},
+      "eas": {
+        "projectId": "15bbb79c-5ea1-4d8f-ab1f-422af8f19095"
+      }
+    }
+  }
+}
