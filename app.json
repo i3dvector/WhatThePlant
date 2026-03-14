@@ -36,6 +36,8 @@
       "expo-router",
       "expo-sqlite",
       "expo-sharing",
+      "expo-font",
+      "expo-system-ui",
       [
         "expo-camera",
         {
