@@ -8,7 +8,7 @@ import {
   FlatList,
   ViewToken,
 } from 'react-native';
-import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../constants/colors';
@@ -76,11 +76,9 @@ export function OnboardingCarousel({ onComplete }: OnboardingCarouselProps) {
         keyExtractor={(_, i) => String(i)}
         renderItem={({ item }) => (
           <View style={styles.slide}>
-            <Animated.View entering={FadeInUp.delay(200).duration(500)}>
-              <View style={styles.iconCircle}>
-                <Ionicons name={item.icon} size={64} color={Colors.light.accent} />
-              </View>
-            </Animated.View>
+            <View style={styles.iconCircle}>
+              <Ionicons name={item.icon} size={64} color={Colors.light.accent} />
+            </View>
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>
           </View>

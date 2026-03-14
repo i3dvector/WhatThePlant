@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { SavedPlant, PlantResult, PlantOrgan } from '../types';
 import { getDatabase } from '../services/database';
-import { File, Directory, Paths } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 interface GardenStore {
   plants: SavedPlant[];
@@ -50,14 +50,10 @@ export const useGardenStore = create<GardenStore>((set, get) => ({
     try {
       // Copy image to permanent storage
       const filename = `plant_${Date.now()}.jpg`;
-      const gardenDir = new Directory(Paths.document, 'garden');
-      if (!gardenDir.exists) {
-        gardenDir.create();
-      }
-      const sourceFile = new File(imageUri);
-      const destFile = new File(gardenDir, filename);
-      sourceFile.copy(destFile);
-      const destUri = destFile.uri;
+      const gardenDir = FileSystem.documentDirectory + 'garden/';
+      await FileSystem.makeDirectoryAsync(gardenDir, { intermediates: true });
+      const destUri = gardenDir + filename;
+      await FileSystem.copyAsync({ from: imageUri, to: destUri });
 
       const db = await getDatabase();
       await db.runAsync(
@@ -84,8 +80,7 @@ export const useGardenStore = create<GardenStore>((set, get) => ({
     try {
       const plant = get().plants.find((p) => p.id === id);
       if (plant) {
-        const file = new File(plant.imageUri);
-        if (file.exists) file.delete();
+        await FileSystem.deleteAsync(plant.imageUri, { idempotent: true });
       }
       const db = await getDatabase();
       await db.runAsync('DELETE FROM plants WHERE id = ?', [id]);
