@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system/legacy';
 import type { PlantOrgan, PlantResult, PlantNetResult } from '../types';
 
 const API_KEY = Constants.expoConfig?.extra?.plantNetApiKey || 'YOUR_API_KEY';
@@ -20,28 +21,30 @@ export async function identifyPlant(
 ): Promise<PlantResult[]> {
   const compressedUri = await compressImage(imageUri);
 
-  const formData = new FormData();
-  formData.append('images', {
-    uri: compressedUri,
-    type: 'image/jpeg',
-    name: 'plant.jpg',
-  } as any);
-  formData.append('organs', organ);
+  // Use FileSystem.uploadAsync for reliable multipart file upload on Android
+  // (React Native New Architecture doesn't support the { uri, type, name }
+  // FormData shorthand — files must be uploaded natively)
+  const uploadResult = await FileSystem.uploadAsync(
+    `${BASE_URL}?api-key=${API_KEY}&lang=en`,
+    compressedUri,
+    {
+      httpMethod: 'POST',
+      uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+      fieldName: 'images',
+      mimeType: 'image/jpeg',
+      parameters: { organs: organ },
+    }
+  );
 
-  const response = await fetch(`${BASE_URL}?api-key=${API_KEY}&lang=en`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (response.status === 429) {
+  if (uploadResult.status === 429) {
     throw new Error('RATE_LIMIT');
   }
 
-  if (!response.ok) {
-    throw new Error(`API_ERROR_${response.status}`);
+  if (uploadResult.status < 200 || uploadResult.status >= 300) {
+    throw new Error(`API_ERROR_${uploadResult.status}`);
   }
 
-  const data = await response.json();
+  const data = JSON.parse(uploadResult.body);
 
   if (!data.results || data.results.length === 0) {
     throw new Error('NO_RESULTS');
