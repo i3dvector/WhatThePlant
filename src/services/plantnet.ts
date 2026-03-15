@@ -31,9 +31,6 @@ export async function identifyPlant(
   const response = await fetch(`${BASE_URL}?api-key=${API_KEY}&lang=en`, {
     method: 'POST',
     body: formData,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
   });
 
   if (response.status === 429) {
